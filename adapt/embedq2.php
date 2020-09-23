@@ -9,16 +9,23 @@
 //
 // (c) 2020 David Lippman
 
+
 $init_skip_csrfp = true;
+
 require __DIR__ . "/../init_without_validate.php";
 require_once __DIR__ . '/../assess2/AssessStandalone.php';
 require(__DIR__ . "/../includes/JWT.php");
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 
 $assessver = 2;
 $courseUIver = 2;
 $assessUIver = 2;
 $qn = 5; //question number to use
-$_SESSION = array();
+
+$_SESSION = [];
+
 $inline_choicemap = !empty($CFG['GEN']['choicesalt']) ? $CFG['GEN']['choicesalt'] : 'test';
 $statesecret = !empty($CFG['GEN']['embedsecret']) ? $CFG['GEN']['embedsecret'] : 'test';
 
@@ -35,11 +42,16 @@ if (isset($_POST['state'])) {
         //$QS = json_decode(json_encode(JWT::decode($_REQUEST['problemJWT'])), true);
 
         $tks = explode('.', $_REQUEST['problemJWT']);
-
         list($headb64, $bodyb64, $cryptob64) = $tks;
-
-     $payload = base64_decode($bodyb64);
-     echo $payload;
+        $payload = json_decode(base64_decode($bodyb64), true);
+        $QS['id'] = $payload['imathas']['id'];
+        $QS['seed'] = $payload['imathas']['seed'];
+        $problemJWT = $_REQUEST['problemJWT'];
+        $parsedUrl = parse_url($payload['iss']);
+        $ip = $parsedUrl['host'];
+        $port = (string)$parsedUrl['port'];
+        $port = ($port) ? ':' . $port : '';
+        $url = $ip . $port;
     } catch (Exception $e) {
         echo "JWT Error: " . $e->getMessage();
         exit;
@@ -49,7 +61,8 @@ if (isset($_POST['state'])) {
         if (isset($QS['showscored'])) {
             // want to redisplay question; set as state
             $_POST['state'] = $QS['showscored'];
-        } if (isset($QS['redisplay'])) {
+        }
+        if (isset($QS['redisplay'])) {
             // want to redisplay question; set as state
             $_POST['state'] = $QS['redisplay'];
         }
@@ -66,7 +79,7 @@ if (empty($QS['id'])) {
     echo 'Need to supply an id';
     exit;
 }
-echo 'sdfdsf';exit;
+
 // set user preferences
 $prefdefaults = array(
     'mathdisp' => 6, //default is katex
@@ -76,6 +89,7 @@ $prefdefaults = array(
     'livepreview' => 1);
 
 // override via cookie if set
+$prefcookie = null;
 if (!empty($_COOKIE["embedq2userprefs"])) {
     $prefcookie = json_decode($_COOKIE["embedq2userprefs"], true);
 }
@@ -89,6 +103,7 @@ foreach ($prefdefaults as $key => $def) {
         $_SESSION['userprefs'][$key] = $def;
     }
 }
+$_SESSION['userprefs']['test'] = 'test';
 // override via query string or post value; record into cookie
 if (isset($_REQUEST['graphdisp'])) { //currently same is used for graphdisp and drawentry
     $_SESSION['userprefs']['graphdisp'] = filter_var($_REQUEST['graphdisp'], FILTER_SANITIZE_NUMBER_INT);
@@ -122,11 +137,11 @@ if (isset($_POST['state'])) {
     $state = json_decode(json_encode(JWT::decode($_POST['state'], $statesecret)), true);
     $seed = $state['seeds'][$qn];
     if (!$issigned) {
-        $seed = ($seed%10000) + 10000;
+        $seed = ($seed % 10000) + 10000;
     }
 } else {
     if (isset($QS['seed'])) {
-        $seed = intval($QS['seed'])%10000;
+        $seed = intval($QS['seed']) % 10000;
     } else {
         $seed = rand(0, 9999);
     }
@@ -144,6 +159,7 @@ if (isset($_POST['state'])) {
         'rawscores' => array($qn => array()),
         'auth' => $QS['auth']
     );
+
 }
 
 $overrides = array();
@@ -214,10 +230,10 @@ if (isset($QS['autoseq'])) {
 if (isset($_POST['regen']) && !$issigned) {
     $seed = rand(0, 9999) + 10000;
     $state['seeds'][$qn] = $seed;
-    unset($state['stuanswers'][$qn+1]);
-    unset($state['stuanswersval'][$qn+1]);
-    $state['scorenonzero'][$qn+1] = false;
-    $state['scoreiscorrect'][$qn+1] = false;
+    unset($state['stuanswers'][$qn + 1]);
+    unset($state['stuanswersval'][$qn + 1]);
+    $state['scorenonzero'][$qn + 1] = false;
+    $state['scoreiscorrect'][$qn + 1] = false;
     $state['partattemptn'][$qn] = array();
     $state['rawscores'][$qn] = array();
 }
@@ -228,19 +244,68 @@ if (isset($_POST['toscoreqn'])) {
     $toscoreqn = json_decode($_POST['toscoreqn'], true);
     $parts_to_score = array();
     if (isset($toscoreqn[$qn])) {
-      foreach ($toscoreqn[$qn] as $pn) {
-        $parts_to_score[$pn] = true;
-      };
+        foreach ($toscoreqn[$qn] as $pn) {
+            $parts_to_score[$pn] = true;
+        };
     }
     $res = $a2->scoreQuestion($qn, $parts_to_score);
+
     $jwtcontents = array(
         'id' => $qsid,
-        'score' => round(array_sum($res['scores']),2),
+        'score' => round(array_sum($res['scores']), 2),
         'raw' => $res['raw'],
         'allans' => $res['allans'],
         'errors' => $res['errors'],
         'state' => JWT::encode($a2->getState(), $statesecret)
     );
+
+    $tks = explode('.', $_POST['problemJWT']);
+
+    //create a new JWT with the original claims, then add the other stuff in
+    list($headb64, $bodyb64, $cryptob64) = $tks;
+    $payload = [
+        'id' => $qsid,
+        'score' => round(array_sum($res['scores']), 2),
+        'raw' => $res['raw'],
+        'allans' => $res['allans'],
+        'errors' => $res['errors'],
+        'state' => JWT::encode($a2->getState(), $statesecret)
+    ];
+
+    $old_payload = json_decode(base64_decode($bodyb64), true);
+    foreach ($old_payload as $key => $value){
+        $payload[$key] = $value;
+    }
+    $payload['problemJWT'] = $_POST['problemJWT'];
+
+
+    $answerJWT = JWT::encode($payload, 'webwork');
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $answerJWT);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+
+    $authorization = "Authorization: Bearer $answerJWT"; // Prepare the authorisation token
+
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json', $authorization]); // Inject the token into the header
+    curl_setopt($ch, CURLOPT_URL, 'https://dev.adapt.libretexts.org/api/jwt/process-answer-jwt');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $result = curl_exec($ch); // Execute the cURL statement
+
+    if ($result === false) {
+        $result = new stdClass();
+        $result->errors = [];
+        $result->errors[0] = new stdClass();
+        $result->errors[0]->message = 'Connection issue: ' . curl_error($ch);
+    }
+    curl_close($ch); // Close the cURL connection
+
+
+    var_dump($result);
+    exit;
     if ($QS['auth'] != '') {
         $stm = $DBH->prepare("SELECT password FROM imas_users WHERE SID=?");
         $stm->execute(array($QS['auth']));
@@ -248,7 +313,10 @@ if (isset($_POST['toscoreqn'])) {
     } else {
         $authsecret = '';
     }
-    $out = array('jwt'=>JWT::encode($jwtcontents, $authsecret));
+    $jwt = JWT::encode($jwtcontents, $authsecret);
+
+
+    $out = array('jwt' => $jwt);
 
     if ($state['showscoredonsubmit'] || (!$res['allans'] && $state['autoseq'])) {
         $disp = $a2->displayQuestion($qn, $overrides);
@@ -286,6 +354,7 @@ if (isset($_GET['theme'])) {
 }
 
 $lastupdate = '20200422';
+$placeinhead = '';
 $placeinhead .= '<link rel="stylesheet" type="text/css" href="' . $imasroot . '/assess2/vue/css/index.css?v=' . $lastupdate . '" />';
 $placeinhead .= '<link rel="stylesheet" type="text/css" href="' . $imasroot . '/assess2/vue/css/chunk-common.css?v=' . $lastupdate . '" />';
 $placeinhead .= '<link rel="stylesheet" type="text/css" href="' . $imasroot . '/assess2/print.css?v=' . $lastupdate . '" media="print">';
@@ -299,18 +368,23 @@ if (!empty($CFG['assess2-use-vue-dev'])) {
     $placeinhead .= '<script src="' . $imasroot . '/mathquill/mqeditor.js?v=041920" type="text/javascript"></script>';
     $placeinhead .= '<script src="' . $imasroot . '/mathquill/mqedlayout.js?v=041920" type="text/javascript"></script>';
 } else {
-    $placeinhead .= '<script src="' . $imasroot . '/javascript/assess2_min.js?v=082020" type="text/javascript"></script>';
+    $placeinhead .= '<script src="' . $imasroot . '/javascript/assess2_min.js?v=1" type="text/javascript"></script>';
 }
 
 $placeinhead .= '<script src="' . $imasroot . '/javascript/assess2supp.js?v=082020" type="text/javascript"></script>';
 $placeinhead .= '<link rel="stylesheet" type="text/css" href="' . $imasroot . '/mathquill/mathquill-basic.css">
   <link rel="stylesheet" type="text/css" href="' . $imasroot . '/mathquill/mqeditor.css">';
 
+
+/** ADAPT */
+$placeinhead .= '<script src="' . $imasroot . '/adapt/assess2sup.js?v=' . rand(1, 100000) . '" type="text/javascript"></script>';
+
+
 // setup resize message sender
 $placeinhead .= '<script type="text/javascript">
   var frame_id = "' . $frameid . '";
-  var qsid = '.$qsid.';
-  var thisqn = '.$qn.';
+  var qsid = ' . $qsid . ';
+  var thisqn = ' . $qn . ';
   function sendresizemsg() {
    if(inIframe()){
       var default_height = Math.max(
@@ -373,31 +447,32 @@ if ($_SESSION['mathdisp'] == 1 || $_SESSION['mathdisp'] == 3) {
 }
 $flexwidth = true; //tells header to use non _fw stylesheet
 $nologo = true;
-require "./header.php";
-
+require __DIR__ . "/../header.php";
 echo '<div><ul id="errorslist" style="display:none" class="small"></ul></div>';
 echo '<div class="questionwrap">';
 if (!$state['jssubmit']) {
-    echo '<div id="results'.$qn.'"></div>';
+    echo '<div id="results' . $qn . '"></div>';
 }
 echo '<div class="questionpane">';
-echo '<div class="question" id="questionwrap'.$qn.'">';
+echo '<div class="question" id="questionwrap' . $qn . '">';
 echo '</div></div>';
 if (!$state['jssubmit']) {
     echo '<p>';
-    echo '<button type=button onclick="submitq('.$qn.')" class="primary">'._("Submit").'</button>';
+    echo '<button type=button onclick="adaptSubmitq(' . $qn . ')" class="primary">' . _("Submit") . '</button>';
     if ($state['allowregen']) {
-        echo ' <button type=button onclick="regenq('.$qn.')" class="secondary">'._('Try a similar question').'</button>';
+        echo ' <button type=button onclick="regenq(' . $qn . ')" class="secondary">' . _('Try a similar question') . '</button>';
     }
     echo '</p>';
 }
 echo '</div>';
 echo '<input type=hidden name=toscoreqn id=toscoreqn value=""/>';
-echo '<input type=hidden name=state id=state value="'.Sanitize::encodeStringForDisplay(JWT::encode($a2->getState(), $statesecret)).'" />';
+echo '<input type=hidden name=state id=state value="' . Sanitize::encodeStringForDisplay(JWT::encode($a2->getState(), $statesecret)) . '" />';
+echo '<input type=hidden name=problemJWT id=problemJWT value="' . $problemJWT . '" />';
+
 
 echo '<script>
     $(function() {
-        showandinit('.$qn.','.json_encode($disp).');
+        showandinit(' . $qn . ',' . json_encode($disp) . ');
     });
     </script>';
 
@@ -410,7 +485,7 @@ if ($state['jssubmit']) {
 
 $placeinfooter = '<div id="ehdd" class="ehdd" style="display:none;">
   <span id="ehddtext"></span>
-  <span onclick="showeh(curehdd);" style="cursor:pointer;">'._('[more..]').'</span>
+  <span onclick="showeh(curehdd);" style="cursor:pointer;">' . _('[more..]') . '</span>
 </div>
 <div id="eh" class="eh"></div>';
-require "./footer.php";
+require __DIR__ . "/../footer.php";
