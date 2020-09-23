@@ -303,9 +303,6 @@ if (isset($_POST['toscoreqn'])) {
     }
     curl_close($ch); // Close the cURL connection
 
-
-    var_dump($result);
-    exit;
     if ($QS['auth'] != '') {
         $stm = $DBH->prepare("SELECT password FROM imas_users WHERE SID=?");
         $stm->execute(array($QS['auth']));
@@ -316,13 +313,11 @@ if (isset($_POST['toscoreqn'])) {
     $jwt = JWT::encode($jwtcontents, $authsecret);
 
 
-    $out = array('jwt' => $jwt);
-
     if ($state['showscoredonsubmit'] || (!$res['allans'] && $state['autoseq'])) {
         $disp = $a2->displayQuestion($qn, $overrides);
         $out['disp'] = $disp;
     }
-    echo json_encode($out);
+    echo json_encode($result);
     exit;
 }
 
@@ -371,7 +366,7 @@ if (!empty($CFG['assess2-use-vue-dev'])) {
     $placeinhead .= '<script src="' . $imasroot . '/javascript/assess2_min.js?v=1" type="text/javascript"></script>';
 }
 
-$placeinhead .= '<script src="' . $imasroot . '/javascript/assess2supp.js?v=082020" type="text/javascript"></script>';
+$placeinhead .= '<script src="' . $imasroot . '/javascript/assess2supp.js?v=' . rand(1,10000) . '"  type="text/javascript"></script>';
 $placeinhead .= '<link rel="stylesheet" type="text/css" href="' . $imasroot . '/mathquill/mathquill-basic.css">
   <link rel="stylesheet" type="text/css" href="' . $imasroot . '/mathquill/mqeditor.css">';
 

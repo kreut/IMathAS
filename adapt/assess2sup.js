@@ -11,18 +11,29 @@ function adaptSubmitq(qn) {
         processData: false,
         contentType: false
     }).done(function(msg) {
-        var data = parseJwt(msg.jwt);
-        $("#state").val(data.state);
-        showerrors(data.errors);
-        if (msg.disp) {
-            $("#results"+qn).html(_("Score: ")+data.score);
-            showandinit(qn, msg.disp);
-        } else {
-            $("#results"+qn).html(_('Question Submitted'));
-            $("#questionwrap"+qn).empty();
-        }
-        sendupscores(msg.jwt);
+        let response = JSON.parse(msg);
+       // var data = parseJwt(msg.jwt);
+        //$("#state").val(data.state);
+        //showerrors(data.errors);
+        //if (msg.disp) {
+         //   $("#results"+qn).html(_("Score: ")+data.score);
+          //  showandinit(qn, msg.disp);
+        //} else {
+         //   $("#results"+qn).html(_('Question Submitted'));
+          //  $("#questionwrap"+qn).empty();
+       // }
+
+            var returnobj = {
+                subject: "lti.ext.imathas.result",
+                message: response.message,
+                type: response.type,
+                frame_id: frame_id
+            };
+            window.parent.postMessage(JSON.stringify(returnobj), '*');
+
     }).always(function(msg) {
         $("#toscoreqn").val('');
+        $("#results"+qn).html(_(''));
+
     });
 }
