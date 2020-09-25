@@ -3,6 +3,7 @@ function adaptSubmitq(qn) {
     var data = dopresubmit(qn, true);
     data.append('state', document.getElementById('state').value);
     data.append('problemJWT', document.getElementById('problemJWT').value);
+    console.log(data)
     $.ajax({
         url: window.location.pathname,
         type: 'POST',
@@ -11,7 +12,9 @@ function adaptSubmitq(qn) {
         processData: false,
         contentType: false
     }).done(function(msg) {
+
         let response = JSON.parse(msg);
+        console.log(response)
        // var data = parseJwt(msg.jwt);
         //$("#state").val(data.state);
         //showerrors(data.errors);

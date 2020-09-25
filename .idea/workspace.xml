@@ -22,6 +22,9 @@
     <list default="true" id="68cab050-92da-403e-af37-d289ca5a9166" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/adapt/JWE.php" beforeDir="false" afterPath="$PROJECT_DIR$/adapt/JWE.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt/assess2sup.js" beforeDir="false" afterPath="$PROJECT_DIR$/adapt/assess2sup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt/embedq2.php" beforeDir="false" afterPath="$PROJECT_DIR$/adapt/embedq2.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,7 +151,8 @@
       <workItem from="1600202883615" duration="387000" />
       <workItem from="1600706481098" duration="2278000" />
       <workItem from="1600914841730" duration="2634000" />
-      <workItem from="1600969095621" duration="1642000" />
+      <workItem from="1600969095621" duration="2180000" />
+      <workItem from="1600976348075" duration="12809000" />
     </task>
     <servers />
   </component>
@@ -176,5 +180,10 @@
       <screen x="0" y="23" width="1392" height="877" />
     </state>
     <state x="330" y="362" key="NewPhpFileDialog/0.23.1392.877@0.23.1392.877" timestamp="1600915314360" />
+    <state x="419" y="202" width="632" height="490" key="find.popup" timestamp="1601001421932">
+      <screen x="0" y="23" width="1392" height="877" />
+    </state>
+    <state x="410" y="204" width="598" height="490" key="find.popup/0.23.1388.877@0.23.1388.877" timestamp="1600983160703" />
+    <state x="419" y="202" width="632" height="490" key="find.popup/0.23.1392.877@0.23.1392.877" timestamp="1601001421932" />
   </component>
 </project>

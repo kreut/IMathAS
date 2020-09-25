@@ -1,8 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-require __DIR__ . '/../vendor/autoload.php';
 
 use Jose\Component\Core\AlgorithmManager;
 use Jose\Component\Encryption\Algorithm\KeyEncryption\A256KW;
@@ -51,8 +47,11 @@ class JWE
 
     public function init()
     {
-        $token = $this->encode('My really secret payload that only Henry knows.');
-        $this->decode($token);
+        $message= 'Message to encrypt';
+        echo "Message: $message \r\n";
+        $token = $this->encode($message);
+        echo "Token: $token \r\n";
+      echo "Decrypted: " . $this->decode($token);
     }
 
 
@@ -108,5 +107,4 @@ class JWE
         return $jwe->getPayload();
     }
 }
-$jwe = new JWE();
-$jwe->init();
+

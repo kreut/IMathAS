@@ -14,18 +14,43 @@ $init_skip_csrfp = true;
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-//require __DIR__ . "/../init_without_validate.php";
-//require_once __DIR__ . '/../assess2/AssessStandalone.php';
-//require(__DIR__ . "/../includes/JWT.php");
+
+require __DIR__ . "/../init_without_validate.php";
+require_once __DIR__ . '/../assess2/AssessStandalone.php';
+
+require(__DIR__ . "/../includes/JWT.php");
+
+
+if (!function_exists('mb_str_split')) {
+    /**
+     * Convert a multibyte string to an array
+     *
+     * @param string $string The input string.
+     * @param integer $split_length Maximum length of the chunk.
+     * @param string $encoding The encoding parameter is the character encoding.
+     * @return array
+     */
+    function mb_str_split($string, $split_length = 1, $encoding = null)
+    {
+        if (is_null($encoding)) {
+            $encoding = mb_internal_encoding();
+        }
+
+        if ($split_length < 1) {
+            return false;
+        }
+
+        $return_value = array();
+        $string_length = mb_strlen($string, $encoding);
+        for ($i = 0; $i < $string_length; $i += $split_length) {
+            $return_value[] = mb_substr($string, $i, $split_length, $encoding);
+        }
+        return $return_value;
+    }
+}
+
 require __DIR__ . '/../vendor/autoload.php';
-require (__DIR__ . '/JWE.php');
-
-
-echo "start";
-$jwe = new JWE();
-$jwe->init();
-exit;
-
+require(__DIR__ . '/JWE.php');
 
 
 $assessver = 2;
@@ -34,7 +59,7 @@ $assessUIver = 2;
 $qn = 5; //question number to use
 
 $_SESSION = [];
-
+$JWE = new JWE();
 $inline_choicemap = !empty($CFG['GEN']['choicesalt']) ? $CFG['GEN']['choicesalt'] : 'test';
 $statesecret = !empty($CFG['GEN']['embedsecret']) ? $CFG['GEN']['embedsecret'] : 'test';
 
@@ -49,18 +74,24 @@ if (isset($_POST['state'])) {
         // decode JWT.  Stupid hack to convert it into an assoc array
         // verification using 'auth' is built-into the JWT method
         //$QS = json_decode(json_encode(JWT::decode($_REQUEST['problemJWT'])), true);
+        $problemJWE =  $_REQUEST['problemJWT'];
+        $problemJWT = $JWE->decode($_REQUEST['problemJWT']);
+        $tks = explode('.', $problemJWT);
 
-        $tks = explode('.', $_REQUEST['problemJWT']);
         list($headb64, $bodyb64, $cryptob64) = $tks;
         $payload = json_decode(base64_decode($bodyb64), true);
+
         $QS['id'] = $payload['imathas']['id'];
         $QS['seed'] = $payload['imathas']['seed'];
-        $problemJWT = $_REQUEST['problemJWT'];
+
         $parsedUrl = parse_url($payload['iss']);
         $ip = $parsedUrl['host'];
         $port = (string)$parsedUrl['port'];
         $port = ($port) ? ':' . $port : '';
         $url = $ip . $port;
+        $url = ((strpos($url, '127.0.0.1') !== false) || (strpos($url, 'dev') !== false))
+            ? 'dev.adapt.libretexts.org'
+            : $url;
     } catch (Exception $e) {
         echo "JWT Error: " . $e->getMessage();
         exit;
@@ -268,7 +299,7 @@ if (isset($_POST['toscoreqn'])) {
         'state' => JWT::encode($a2->getState(), $statesecret)
     );
 
-    $tks = explode('.', $_POST['problemJWT']);
+    $tks = explode('.', $JWE->decode($_POST['problemJWT']));
 
     //create a new JWT with the original claims, then add the other stuff in
     list($headb64, $bodyb64, $cryptob64) = $tks;
@@ -282,11 +313,10 @@ if (isset($_POST['toscoreqn'])) {
     ];
 
     $old_payload = json_decode(base64_decode($bodyb64), true);
-    foreach ($old_payload as $key => $value){
+    foreach ($old_payload as $key => $value) {
         $payload[$key] = $value;
     }
-    $payload['problemJWT'] = $_POST['problemJWT'];
-
+    $payload['problemJWT'] = $JWE->decode($_POST['problemJWT']);
 
     $answerJWT = JWT::encode($payload, 'webwork');
 
@@ -299,16 +329,16 @@ if (isset($_POST['toscoreqn'])) {
     $authorization = "Authorization: Bearer $answerJWT"; // Prepare the authorisation token
 
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json', $authorization]); // Inject the token into the header
-    curl_setopt($ch, CURLOPT_URL, 'https://dev.adapt.libretexts.org/api/jwt/process-answer-jwt');
+    curl_setopt($ch, CURLOPT_URL, "https://dev.adapt.libretexts.org/api/jwt/process-answer-jwt");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
     $result = curl_exec($ch); // Execute the cURL statement
 
     if ($result === false) {
         $result = new stdClass();
-        $result->errors = [];
-        $result->errors[0] = new stdClass();
-        $result->errors[0]->message = 'Connection issue: ' . curl_error($ch);
+        $result->message = 'Connection issue: ' . curl_error($ch);
+        $result->type = 'error';
+        return $result;
     }
     curl_close($ch); // Close the cURL connection
 
@@ -375,7 +405,7 @@ if (!empty($CFG['assess2-use-vue-dev'])) {
     $placeinhead .= '<script src="' . $imasroot . '/javascript/assess2_min.js?v=1" type="text/javascript"></script>';
 }
 
-$placeinhead .= '<script src="' . $imasroot . '/javascript/assess2supp.js?v=' . rand(1,10000) . '"  type="text/javascript"></script>';
+$placeinhead .= '<script src="' . $imasroot . '/javascript/assess2supp.js?v=' . rand(1, 10000) . '"  type="text/javascript"></script>';
 $placeinhead .= '<link rel="stylesheet" type="text/css" href="' . $imasroot . '/mathquill/mathquill-basic.css">
   <link rel="stylesheet" type="text/css" href="' . $imasroot . '/mathquill/mqeditor.css">';
 
@@ -471,7 +501,8 @@ if (!$state['jssubmit']) {
 echo '</div>';
 echo '<input type=hidden name=toscoreqn id=toscoreqn value=""/>';
 echo '<input type=hidden name=state id=state value="' . Sanitize::encodeStringForDisplay(JWT::encode($a2->getState(), $statesecret)) . '" />';
-echo '<input type=hidden name=problemJWT id=problemJWT value="' . $problemJWT . '" />';
+echo '<input type=hidden name=problemJWT id=problemJWT value="' . $_REQUEST['problemJWT']. '" />';
+echo '<input type=hidden name=url  value="' . $url. '" />';
 
 
 echo '<script>
