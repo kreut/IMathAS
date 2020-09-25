@@ -406,7 +406,7 @@ if (!empty($CFG['assess2-use-vue-dev'])) {
 } else {
     $placeinhead .= '<script src="' . $imasroot . '/javascript/assess2_min.js?v=1" type="text/javascript"></script>';
 }
-
+$placeinhead .= '<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.2.11/iframeResizer.contentWindow.js" integrity="sha512-RMBWitJB1ymY4l6xeYsFwoEgVCAnOWX/zL1gNwXjlUj78nZ8SVbJsZxbH/w0p2jDNraHkOW8rzQgcJ0LNSXWBA==" crossorigin="anonymous"></script>';
 $placeinhead .= '<script src="' . $imasroot . '/javascript/assess2supp.js?v=' . rand(1, 10000) . '"  type="text/javascript"></script>';
 $placeinhead .= '<link rel="stylesheet" type="text/css" href="' . $imasroot . '/mathquill/mathquill-basic.css">
   <link rel="stylesheet" type="text/css" href="' . $imasroot . '/mathquill/mqeditor.css">';
