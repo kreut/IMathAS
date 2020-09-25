@@ -330,6 +330,9 @@ if (isset($_POST['toscoreqn'])) {
     $authorization = "Authorization: Bearer $answerJWT"; // Prepare the authorisation token
 
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json', $authorization]); // Inject the token into the header
+
+    //cURL will only work on live or dev --- not local for some reason...
+
     curl_setopt($ch, CURLOPT_URL, "https://$url/api/jwt/process-answer-jwt");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 

@@ -35,6 +35,8 @@ function adaptSubmitq(qn) {
                 subject: "lti.ext.imathas.result",
                 message: response.message,
                 type: response.type,
+                last_submitted: response.last_submitted,
+                student_response: response.student_response,
                 frame_id: frame_id
             };
             window.parent.postMessage(JSON.stringify(returnobj), '*');
