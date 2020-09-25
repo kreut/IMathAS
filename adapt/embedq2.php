@@ -329,16 +329,14 @@ if (isset($_POST['toscoreqn'])) {
     $authorization = "Authorization: Bearer $answerJWT"; // Prepare the authorisation token
 
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json', $authorization]); // Inject the token into the header
-    curl_setopt($ch, CURLOPT_URL, "https://dev.adapt.libretexts.org/api/jwt/process-answer-jwt");
+    curl_setopt($ch, CURLOPT_URL, "https://dv.adapt.libretexts.org/api/jwt/process-answer-jwt");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
     $result = curl_exec($ch); // Execute the cURL statement
 
     if ($result === false) {
-        $result = new stdClass();
-        $result->message = 'Connection issue: ' . curl_error($ch);
-        $result->type = 'error';
-        return $result;
+        echo json_encode(utf8_encode('{"type":"error", "message":"There was an error trying to connect to Adapt: ' . curl_error($ch) .'"}'));
+        exit;
     }
     curl_close($ch); // Close the cURL connection
 

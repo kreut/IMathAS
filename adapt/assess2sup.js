@@ -13,8 +13,13 @@ function adaptSubmitq(qn) {
         contentType: false
     }).done(function(msg) {
 
-        let response = JSON.parse(msg);
-        console.log(response)
+       let response;
+        try {
+           response = JSON.parse(msg);
+        } catch(error) {
+           alert(msg);
+            return false;
+        }
        // var data = parseJwt(msg.jwt);
         //$("#state").val(data.state);
         //showerrors(data.errors);
