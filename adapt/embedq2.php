@@ -84,14 +84,7 @@ if (isset($_POST['state'])) {
         $QS['id'] = $payload['imathas']['id'];
         $QS['seed'] = $payload['imathas']['seed'];
 
-        $parsedUrl = parse_url($payload['iss']);
-        $ip = $parsedUrl['host'];
-        $port = (string)$parsedUrl['port'];
-        $port = ($port) ? ':' . $port : '';
-        $url = $ip . $port;
-        $url = ((strpos($url, '127.0.0.1') !== false) || (strpos($url, 'dev') !== false))
-            ? 'dev.adapt.libretexts.org'
-            : $url;
+
     } catch (Exception $e) {
         echo "JWT Error: " . $e->getMessage();
         exit;
@@ -319,7 +312,15 @@ if (isset($_POST['toscoreqn'])) {
     $payload['problemJWT'] = $JWE->decode($_POST['problemJWT']);
 
     $answerJWT = JWT::encode($payload, 'webwork');
-
+    //get the URL for the curl
+    $parsedUrl = parse_url($payload['iss']);
+    $ip = $parsedUrl['host'];
+    $port = (string)$parsedUrl['port'];
+    $port = ($port) ? ':' . $port : '';
+    $url = $ip . $port;
+    $url = ((strpos($url, '127.0.0.1') !== false) || (strpos($url, 'dev') !== false))
+        ? 'dev.adapt.libretexts.org'
+        : $url;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $answerJWT);
@@ -329,7 +330,7 @@ if (isset($_POST['toscoreqn'])) {
     $authorization = "Authorization: Bearer $answerJWT"; // Prepare the authorisation token
 
     curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json', $authorization]); // Inject the token into the header
-    curl_setopt($ch, CURLOPT_URL, "https://dv.adapt.libretexts.org/api/jwt/process-answer-jwt");
+    curl_setopt($ch, CURLOPT_URL, "https://$url/api/jwt/process-answer-jwt");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
     $result = curl_exec($ch); // Execute the cURL statement
