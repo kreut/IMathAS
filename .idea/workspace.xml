@@ -121,6 +121,7 @@
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="reference.settings.ide.settings.file-colors" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -151,7 +152,14 @@
       <workItem from="1600969095621" duration="2180000" />
       <workItem from="1600976348075" duration="16598000" />
       <workItem from="1601041647616" duration="103000" />
-      <workItem from="1601069530858" duration="549000" />
+      <workItem from="1601069530858" duration="907000" />
+      <workItem from="1601582408332" duration="1431000" />
+      <workItem from="1601589958185" duration="238000" />
+      <workItem from="1601590394880" duration="676000" />
+      <workItem from="1601658220757" duration="29000" />
+      <workItem from="1601774982315" duration="199000" />
+      <workItem from="1601952468181" duration="305000" />
+      <workItem from="1602157598226" duration="664000" />
     </task>
     <servers />
   </component>
@@ -179,6 +187,10 @@
       <screen x="0" y="23" width="1392" height="877" />
     </state>
     <state x="330" y="362" key="NewPhpFileDialog/0.23.1392.877@0.23.1392.877" timestamp="1600915314360" />
+    <state x="187" y="93" key="SettingsEditor" timestamp="1601658240142">
+      <screen x="0" y="23" width="1395" height="877" />
+    </state>
+    <state x="187" y="93" key="SettingsEditor/0.23.1395.877@0.23.1395.877" timestamp="1601658240142" />
     <state x="419" y="202" width="632" height="490" key="find.popup" timestamp="1601001421932">
       <screen x="0" y="23" width="1392" height="877" />
     </state>

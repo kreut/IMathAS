@@ -65,6 +65,7 @@ $statesecret = !empty($CFG['GEN']['embedsecret']) ? $CFG['GEN']['embedsecret'] :
 
 $issigned = false;
 // Get basic settings from JWT or query string
+
 if (isset($_POST['state'])) {
     $state = json_decode(json_encode(JWT::decode($_POST['state'], $statesecret)), true);
     $QS = $state;
@@ -76,6 +77,10 @@ if (isset($_POST['state'])) {
         //$QS = json_decode(json_encode(JWT::decode($_REQUEST['problemJWT'])), true);
         $problemJWE =  $_REQUEST['problemJWT'];
         $problemJWT = $JWE->decode($_REQUEST['problemJWT']);
+        if (!$problemJWT){
+            echo "There was an error trying to connect to iMathAS: Could not decode JWT";
+            exit;
+        }
         $tks = explode('.', $problemJWT);
 
         list($headb64, $bodyb64, $cryptob64) = $tks;
@@ -86,8 +91,8 @@ if (isset($_POST['state'])) {
 
 
     } catch (Exception $e) {
-        echo "JWT Error: " . $e->getMessage();
-        exit;
+            echo  "There was an error trying to connect to iMathAS: " . $e->getMessage();
+            exit;
     }
     if (!empty($QS['auth'])) {
         $issigned = true;
