@@ -20,8 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="68cab050-92da-403e-af37-d289ca5a9166" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/IMathAS.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/IMathAS.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/adapt/JWE.php" beforeDir="false" afterPath="$PROJECT_DIR$/adapt/JWE.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/adapt/embedq2.php" beforeDir="false" afterPath="$PROJECT_DIR$/adapt/embedq2.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,6 +110,7 @@
       <path value="$PROJECT_DIR$/vendor/psr/http-client" />
       <path value="$PROJECT_DIR$/vendor/psr/http-factory" />
       <path value="$PROJECT_DIR$/vendor/web-token/jwt-key-mgmt" />
+      <path value="$PROJECT_DIR$/vendor/web-token/jwt-encryption-algorithm-pbes2" />
     </include_path>
   </component>
   <component name="ProjectId" id="1hYzb5hO5taDY8dGKAEfhGZPHsm" />
@@ -159,7 +165,8 @@
       <workItem from="1601658220757" duration="29000" />
       <workItem from="1601774982315" duration="199000" />
       <workItem from="1601952468181" duration="305000" />
-      <workItem from="1602157598226" duration="664000" />
+      <workItem from="1602157598226" duration="759000" />
+      <workItem from="1604257512461" duration="5755000" />
     </task>
     <servers />
   </component>
@@ -183,6 +190,10 @@
       <screen x="0" y="23" width="1392" height="877" />
     </state>
     <state x="173" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1392.877@0.23.1392.877" timestamp="1600915534264" />
+    <state x="360" y="211" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1604257804290">
+      <screen x="0" y="23" width="1378" height="877" />
+    </state>
+    <state x="360" y="211" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1378.877@0.23.1378.877" timestamp="1604257804290" />
     <state x="330" y="362" key="NewPhpFileDialog" timestamp="1600915314360">
       <screen x="0" y="23" width="1392" height="877" />
     </state>

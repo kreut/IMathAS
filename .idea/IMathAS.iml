@@ -63,6 +63,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/web-token/jwt-encryption-algorithm-aescbc" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/web-token/jwt-encryption-algorithm-aesgcm" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/web-token/jwt-encryption-algorithm-aeskw" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/web-token/jwt-encryption-algorithm-pbes2" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/web-token/jwt-key-mgmt" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/webmozart/assert" />
     </content>

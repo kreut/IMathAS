@@ -20,7 +20,6 @@ require_once __DIR__ . '/../assess2/AssessStandalone.php';
 
 require(__DIR__ . "/../includes/JWT.php");
 
-
 if (!function_exists('mb_str_split')) {
     /**
      * Convert a multibyte string to an array
@@ -76,19 +75,16 @@ if (isset($_POST['state'])) {
         // verification using 'auth' is built-into the JWT method
         //$QS = json_decode(json_encode(JWT::decode($_REQUEST['problemJWT'])), true);
         $problemJWE =  $_REQUEST['problemJWT'];
-        $problemJWT = $JWE->decode($_REQUEST['problemJWT']);
+        $problemJWT = $JWE->decrypt($_REQUEST['problemJWT']);
         if (!$problemJWT){
             echo "There was an error trying to connect to iMathAS: Could not decode JWT";
             exit;
         }
-        $tks = explode('.', $problemJWT);
-
-        list($headb64, $bodyb64, $cryptob64) = $tks;
-        $payload = json_decode(base64_decode($bodyb64), true);
+        $payload = json_decode($problemJWT, true);
 
         $QS['id'] = $payload['imathas']['id'];
         $QS['seed'] = $payload['imathas']['seed'];
-
+        $QS['allowregen'] = $payload['imathas']['allowregen'];
 
     } catch (Exception $e) {
             echo  "There was an error trying to connect to iMathAS: " . $e->getMessage();
@@ -297,10 +293,14 @@ if (isset($_POST['toscoreqn'])) {
         'state' => JWT::encode($a2->getState(), $statesecret)
     );
 
-    $tks = explode('.', $JWE->decode($_POST['problemJWT']));
+    //decode to get the URL
+    $problemJWT = $_REQUEST['problemJWT'];
+    $problemJWT = $JWE->decrypt($_REQUEST['problemJWT']);
+    $old_payload = json_decode($problemJWT, true);
 
-    //create a new JWT with the original claims, then add the other stuff in
-    list($headb64, $bodyb64, $cryptob64) = $tks;
+    $url = $old_payload['scheme_and_host'];
+
+
     $payload = [
         'id' => $qsid,
         'score' => round(array_sum($res['scores']), 2),
@@ -310,35 +310,19 @@ if (isset($_POST['toscoreqn'])) {
         'state' => JWT::encode($a2->getState(), $statesecret)
     ];
 
-    $old_payload = json_decode(base64_decode($bodyb64), true);
     foreach ($old_payload as $key => $value) {
         $payload[$key] = $value;
     }
-    $payload['problemJWT'] = $JWE->decode($_POST['problemJWT']);
 
-    $answerJWT = JWT::encode($payload, 'webwork');
-    //get the URL for the curl
-    $parsedUrl = parse_url($payload['iss']);
-    $ip = $parsedUrl['host'];
-    $port = (string)$parsedUrl['port'];
-    $port = ($port) ? ':' . $port : '';
-    $url = $ip . $port;
-    $url = ((strpos($url, '127.0.0.1') !== false) || (strpos($url, 'dev') !== false))
-        ? 'dev.adapt.libretexts.org'
-        : $url;
+    $payload['problemJWT'] = $_REQUEST['problemJWT'];
+    $answerJWT = JWT::encode($payload,  file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/../JWE/webwork'));
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $answerJWT);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-
-    $authorization = "Authorization: Bearer $answerJWT"; // Prepare the authorisation token
-
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Accept: application/json', $authorization]); // Inject the token into the header
-
     //cURL will only work on live or dev --- not local for some reason...
 
-    curl_setopt($ch, CURLOPT_URL, "https://$url/api/jwt/process-answer-jwt");
+    curl_setopt($ch, CURLOPT_URL, "$url/api/jwt/process-answer-jwt");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
     $result = curl_exec($ch); // Execute the cURL statement
@@ -471,7 +455,7 @@ $placeinhead .= '<script type="text/javascript">
   .questionpane {
     margin-top: 0 !important;
     }
-  .questionpane>.question { 
+  .questionpane>.question {
   	background-image: none !important;
   }
   #mqe-fb-spacer {
