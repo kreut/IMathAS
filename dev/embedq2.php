@@ -9,7 +9,6 @@
 //
 // (c) 2020 David Lippman
 
-
 $init_skip_csrfp = true;
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -75,7 +74,7 @@ if (isset($_POST['state'])) {
         // verification using 'auth' is built-into the JWT method
         //$QS = json_decode(json_encode(JWT::decode($_REQUEST['problemJWT'])), true);
         $problemJWE =  $_REQUEST['problemJWT'];
-        $problemJWT = $JWE->decrypt($_REQUEST['problemJWT']);
+        $problemJWT = $JWE->decrypt($_REQUEST['problemJWT'], $secret_file);
         if (!$problemJWT){
             echo "There was an error trying to connect to iMathAS: Could not decode JWT";
             exit;
@@ -315,7 +314,11 @@ if (isset($_POST['toscoreqn'])) {
     }
 
     $payload['problemJWT'] = $_REQUEST['problemJWT'];
-    $answerJWT = JWT::encode($payload,  file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/../JWE/webwork'));
+    $secret_file = 'webwork';
+    if ($_SERVER['HTTP_REFERER'] === 'scale.fresnostate.edu') {
+        $secret_file = 'fresnostate';
+    }
+    $answerJWT = JWT::encode($payload,  file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/../JWE/$secret_file"));
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $answerJWT);
