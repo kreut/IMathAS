@@ -4,7 +4,8 @@
 
 require "../init.php";
 
-function flattenitems($items, &$addto) {
+function flattenitems($items, &$addto)
+{
     global $itemsimporder;
     foreach ($items as $item) {
         if (is_array($item)) {
@@ -18,36 +19,39 @@ function flattenitems($items, &$addto) {
 
 // restrict to teachers only
 // we'll check for ownership later
-if ($myrights < 40) {exit;}
+if ($myrights < 40) {
+    exit;
+}
 
 if (!isset($_POST['cid'])) {
     require "../header.php";
     ?>
     <h1>Export CSV Question IDs for ADAPT</h1>
     <form method="post">
-    <p><label>Course ID: <input type=number name=cid></label></p>
-    <p><label>Public: <select name=public>
-        <option value="y">Yes</option>
-        <option value="n">No</option>
-        </select></label></p>
-    <p><label>Folder Names: <select name=folder>
-        <option value="course">One folder with Course Name</option>
-        <option value="assn">One folder for each Assessment</option>
-        </select></label></p>
-    <p><label>Assignment Column: <select name=assncol>
-        <option value="n">No, don't include</option>
-        <option value="y">Yes, include</option>
-        </select></label></p>
-    <p><label>Duplicate Question IDs in different assessments:
-        <select name=dups>
-        <option value="n">No duplicates</option>
-        <option value="y">Include duplicates</option>
-        </select></label></p>
-    <button type=submit>Generate</button>
+        <p><label>Course ID: <input type=number name=cid></label></p>
+        <p><label>Public: <select name=public>
+                    <option value="y">Yes</option>
+                    <option value="n">No</option>
+                </select></label></p>
+        <p><label>Folder Names: <select name=folder>
+                    <option value="course">One folder with Course Name</option>
+                    <option value="assn">One folder for each Assessment</option>
+                </select></label></p>
+        <p><label>Assignment Column: <select name=assncol>
+                    <option value="n">No, don't include</option>
+                    <option value="y">Yes, include</option>
+                </select></label></p>
+        <p><label>Duplicate Question IDs in different assessments:
+                <select name=dups>
+                    <option value="n">No duplicates</option>
+                    <option value="y">Include duplicates</option>
+                </select></label></p>
+        <button type=submit>Generate</button>
     </form>
     <?php
-require "../footer.php";
+    require "../footer.php";
 } else {
+    $cid = intval($_POST['cid']);
     $foldertype = $_POST['folder'];
     $assncol = $_POST['assncol'];
 
@@ -115,7 +119,9 @@ require "../footer.php";
         foreach ($order as $k => $v) {
             $sub = explode('~', $v);
             foreach ($sub as $sv) {
-                if (strpos($sv, '|') !== false) {continue;}
+                if (strpos($sv, '|') !== false) {
+                    continue;
+                }
                 $adata[$row['id']][] = $sv;
             }
         }
@@ -149,7 +155,9 @@ require "../footer.php";
     // go through course, add items
     $addedqsids = array();
     foreach ($itemsimporder as $itemid) {
-        if (!isset($itemsassoc[$itemid])) {continue;}
+        if (!isset($itemsassoc[$itemid])) {
+            continue;
+        }
         $aid = $itemsassoc[$itemid];
         $qids = $adata[$aid];
         foreach ($qids as $qid) {
@@ -165,9 +173,17 @@ require "../footer.php";
                 $outrow[] = $assessnames[$aid];
                 $outrow[] = '';
             }
+            $outrow[] = ''; //template
             $outrow[] = ''; //source
             $outrow[] = 'imathas';
             $outrow[] = $qdata[$qid]['questionsetid'];
+            //add in the remaining columns
+            if (!isset($missing_row_count)) {
+                $missing_row_count = count($headerrow) - count($outrow);
+            }
+            for ($i = 0; $i < $missing_row_count; $i++) {
+                $outrow[] = '';
+            }
             $csv[] = $outrow;
 
             $addedqsids[] = $qdata[$qid]['questionsetid'];

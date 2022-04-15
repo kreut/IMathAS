@@ -20,13 +20,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="68cab050-92da-403e-af37-d289ca5a9166" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/IMathAS.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/IMathAS.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/adapt/JWE.php" beforeDir="false" afterPath="$PROJECT_DIR$/adapt/JWE.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/adapt/embedq2.php" beforeDir="false" afterPath="$PROJECT_DIR$/adapt/embedq2.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/adaptexport.php" beforeDir="false" afterPath="$PROJECT_DIR$/util/adaptexport.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +43,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="PhpWorkspaceProjectConfiguration">
     <include_path>
@@ -167,6 +167,8 @@
       <workItem from="1601952468181" duration="305000" />
       <workItem from="1602157598226" duration="759000" />
       <workItem from="1604257512461" duration="5755000" />
+      <workItem from="1650040576266" duration="970000" />
+      <workItem from="1650047342551" duration="1735000" />
     </task>
     <servers />
   </component>
@@ -183,7 +185,6 @@
         </entry>
       </map>
     </option>
-    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="173" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1600915534264">
