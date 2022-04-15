@@ -172,8 +172,8 @@ if (!isset($_POST['cid'])) {
             if ($assncol == 'y') {
                 $outrow[] = $assessnames[$aid];
                 $outrow[] = '';
+                $outrow[] = ''; //template
             }
-            $outrow[] = ''; //template
             $outrow[] = ''; //source
             $outrow[] = 'imathas';
             $outrow[] = $qdata[$qid]['questionsetid'];
