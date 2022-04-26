@@ -15,6 +15,13 @@ function flattenitems($items, &$addto)
         }
     }
 }
+$licenses = [
+    0 => '',            // copyrighted questions - hopefully there are none
+    1 => 'imathascomm', // imathas community license (GPL + CCBY)
+    2 => 'publicdomain',
+    3 => 'ccbyncsa',
+    4 => 'ccbysa'
+];
 
 
 // restrict to teachers only
@@ -98,7 +105,7 @@ if (!isset($_POST['cid'])) {
     $csv[] = $headerrow;
 
     // get all question data
-    $stm = $DBH->prepare("SELECT iq.id,iq.questionsetid,iqs.description FROM imas_questions AS iq
+    $stm = $DBH->prepare("SELECT iq.id,iq.questionsetid,iqs.description,iqs.author,iqs.license FROM imas_questions AS iq
         JOIN imas_questionset AS iqs ON iq.questionsetid=iqs.id
         JOIN imas_assessments AS ia ON iq.assessmentid=ia.id
         WHERE ia.courseid=?");
@@ -177,6 +184,9 @@ if (!isset($_POST['cid'])) {
             $outrow[] = ''; //source
             $outrow[] = 'imathas';
             $outrow[] = $qdata[$qid]['questionsetid'];
+            $outrow[] = $qdata[$qid]['author']; // author
+            $outrow[] = $licenses[$qdata[$qid]['license']];
+            $outrow[] = "4"; // license version. close enough
             //add in the remaining columns
             if (!isset($missing_row_count)) {
                 $missing_row_count = count($headerrow) - count($outrow);
