@@ -21,7 +21,7 @@
   <component name="ChangeListManager">
     <list default="true" id="68cab050-92da-403e-af37-d289ca5a9166" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/adapt/assess2sup.js" beforeDir="false" afterPath="$PROJECT_DIR$/adapt/assess2sup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/embedq2.php" beforeDir="false" afterPath="$PROJECT_DIR$/dev/embedq2.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -170,6 +170,13 @@
       <workItem from="1650125039061" duration="264000" />
       <workItem from="1650498411296" duration="1427000" />
       <workItem from="1650977930302" duration="1603000" />
+      <workItem from="1658503974828" duration="292000" />
+      <workItem from="1661372049668" duration="2323000" />
+      <workItem from="1661502700128" duration="1566000" />
+      <workItem from="1662149251501" duration="682000" />
+      <workItem from="1662482089813" duration="23000" />
+      <workItem from="1662482504550" duration="929000" />
+      <workItem from="1662483693725" duration="126000" />
     </task>
     <servers />
   </component>
@@ -186,28 +193,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="173" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1600915534264">
-      <screen x="0" y="23" width="1392" height="877" />
-    </state>
-    <state x="173" y="23" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.23.1392.877@0.23.1392.877" timestamp="1600915534264" />
-    <state x="360" y="211" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog" timestamp="1604257804290">
-      <screen x="0" y="23" width="1378" height="877" />
-    </state>
-    <state x="360" y="211" key="#com.jetbrains.php.actions.copyPaste.importReferences.PhpImportReferencesDialog/0.23.1378.877@0.23.1378.877" timestamp="1604257804290" />
-    <state x="330" y="362" key="NewPhpFileDialog" timestamp="1600915314360">
-      <screen x="0" y="23" width="1392" height="877" />
-    </state>
-    <state x="330" y="362" key="NewPhpFileDialog/0.23.1392.877@0.23.1392.877" timestamp="1600915314360" />
-    <state x="187" y="93" key="SettingsEditor" timestamp="1601658240142">
-      <screen x="0" y="23" width="1395" height="877" />
-    </state>
-    <state x="187" y="93" key="SettingsEditor/0.23.1395.877@0.23.1395.877" timestamp="1601658240142" />
-    <state x="419" y="202" width="632" height="490" key="find.popup" timestamp="1601001421932">
-      <screen x="0" y="23" width="1392" height="877" />
-    </state>
-    <state x="410" y="204" width="598" height="490" key="find.popup/0.23.1388.877@0.23.1388.877" timestamp="1600983160703" />
-    <state x="419" y="202" width="632" height="490" key="find.popup/0.23.1392.877@0.23.1392.877" timestamp="1601001421932" />
   </component>
 </project>

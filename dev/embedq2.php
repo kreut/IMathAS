@@ -51,6 +51,14 @@ require __DIR__ . '/../vendor/autoload.php';
 require(__DIR__ . '/JWE.php');
 
 
+
+//TODO: figure out the secret file stuff
+$secret_file = 'webwork';
+
+$secret_file = 'fresnostate';
+$api = $secret_file === 'fresnostate' ? 'imathas-api' : 'api';
+
+
 $assessver = 2;
 $courseUIver = 2;
 $assessUIver = 2;
@@ -294,7 +302,7 @@ if (isset($_POST['toscoreqn'])) {
 
     //decode to get the URL
     $problemJWT = $_REQUEST['problemJWT'];
-    $problemJWT = $JWE->decrypt($_REQUEST['problemJWT']);
+    $problemJWT = $JWE->decrypt($_REQUEST['problemJWT'], $secret_file);
     $old_payload = json_decode($problemJWT, true);
 
     $url = $old_payload['scheme_and_host'];
@@ -314,10 +322,6 @@ if (isset($_POST['toscoreqn'])) {
     }
 
     $payload['problemJWT'] = $_REQUEST['problemJWT'];
-    $secret_file = 'webwork';
-    if ($_SERVER['HTTP_REFERER'] === 'scale.fresnostate.edu') {
-        $secret_file = 'fresnostate';
-    }
     $answerJWT = JWT::encode($payload,  file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/../JWE/$secret_file"));
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_POST, true);
@@ -325,7 +329,7 @@ if (isset($_POST['toscoreqn'])) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     //cURL will only work on live or dev --- not local for some reason...
 
-    curl_setopt($ch, CURLOPT_URL, "$url/api/imathas/process-answer-jwt");
+    curl_setopt($ch, CURLOPT_URL, "$url/$api/imathas/process-answer-jwt");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
     $result = curl_exec($ch); // Execute the cURL statement
@@ -405,7 +409,7 @@ $placeinhead .= '<link rel="stylesheet" type="text/css" href="' . $imasroot . '/
 
 
 /** ADAPT */
-$placeinhead .= '<script src="' . $imasroot . '/adapt/assess2sup.js?v=' . rand(1, 100000) . '" type="text/javascript"></script>';
+$placeinhead .= '<script src="' . $imasroot . '/dev/assess2sup.js?v=' . rand(1, 100000) . '" type="text/javascript"></script>';
 
 
 // setup resize message sender
