@@ -27,7 +27,7 @@ class JWE
         $this->serializer = new CompactSerializer(); // The serializer
     }
 
-    public function decrypt(string $token, string $secret_file)
+    public function decrypt(string $token)
     {
 
         $jweDecrypter = new JWEDecrypter(
@@ -36,7 +36,7 @@ class JWE
             $this->compressionMethodManager
         );
         $jwk = JWKFactory::createFromSecret(
-            file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/../JWE/$secret_file")
+            file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/../JWE/webwork')
         );
 
         $jwe = $this->serializer->unserialize($token);

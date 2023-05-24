@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -21,7 +24,8 @@
   <component name="ChangeListManager">
     <list default="true" id="68cab050-92da-403e-af37-d289ca5a9166" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/adaptexport.php" beforeDir="false" afterPath="$PROJECT_DIR$/util/adaptexport.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/assess2sup.js" beforeDir="false" afterPath="$PROJECT_DIR$/dev/assess2sup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dev/embedq2.php" beforeDir="false" afterPath="$PROJECT_DIR$/dev/embedq2.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,20 +120,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="node.js.detected.package.eslint" value="true" />
-    <property name="node.js.path.for.package.eslint" value="project" />
-    <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="reference.settings.ide.settings.file-colors" />
-    <property name="vue.rearranger.settings.migration" value="true" />
-  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/franciscaparedes/IMathAS/dev&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/dev" />
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -178,7 +183,11 @@
       <workItem from="1662482504550" duration="929000" />
       <workItem from="1662483693725" duration="1121000" />
       <workItem from="1663176521068" duration="197000" />
-      <workItem from="1670611466319" duration="625000" />
+      <workItem from="1670611466319" duration="1240000" />
+      <workItem from="1684775971190" duration="270000" />
+      <workItem from="1684837318840" duration="4635000" />
+      <workItem from="1684930093749" duration="13579000" />
+      <workItem from="1685040817086" duration="34050000" />
     </task>
     <servers />
   </component>

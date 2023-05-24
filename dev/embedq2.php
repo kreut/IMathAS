@@ -9,6 +9,7 @@
 //
 // (c) 2020 David Lippman
 
+
 $init_skip_csrfp = true;
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -51,14 +52,6 @@ require __DIR__ . '/../vendor/autoload.php';
 require(__DIR__ . '/JWE.php');
 
 
-
-//TODO: figure out the secret file stuff
-$secret_file = 'webwork';
-
-$secret_file = 'fresnostate';
-$api = $secret_file === 'fresnostate' ? 'imathas-api' : 'api';
-
-
 $assessver = 2;
 $courseUIver = 2;
 $assessUIver = 2;
@@ -70,6 +63,7 @@ $inline_choicemap = !empty($CFG['GEN']['choicesalt']) ? $CFG['GEN']['choicesalt'
 $statesecret = !empty($CFG['GEN']['embedsecret']) ? $CFG['GEN']['embedsecret'] : 'test';
 
 $issigned = false;
+$raw = [];
 // Get basic settings from JWT or query string
 
 if (isset($_POST['state'])) {
@@ -81,21 +75,25 @@ if (isset($_POST['state'])) {
         // decode JWT.  Stupid hack to convert it into an assoc array
         // verification using 'auth' is built-into the JWT method
         //$QS = json_decode(json_encode(JWT::decode($_REQUEST['problemJWT'])), true);
-        $problemJWE =  $_REQUEST['problemJWT'];
-        $problemJWT = $JWE->decrypt($_REQUEST['problemJWT'], $secret_file);
-        if (!$problemJWT){
+        $problemJWE = $_REQUEST['problemJWT'];
+        $problemJWT = $JWE->decrypt($_REQUEST['problemJWT']);
+        if (!$problemJWT) {
             echo "There was an error trying to connect to iMathAS: Could not decode JWT";
             exit;
         }
         $payload = json_decode($problemJWT, true);
-
+        $QS = $payload;
         $QS['id'] = $payload['imathas']['id'];
         $QS['seed'] = $payload['imathas']['seed'];
         $QS['allowregen'] = $payload['imathas']['allowregen'];
 
+        if (isset($payload['adapt']['raw'])) {
+            $raw = $payload['adapt']['raw'];
+        }
+        //print_r($payload['adapt']);
     } catch (Exception $e) {
-            echo  "There was an error trying to connect to iMathAS: " . $e->getMessage();
-            exit;
+        echo "There was an error trying to connect to iMathAS: " . $e->getMessage();
+        exit;
     }
     if (!empty($QS['auth'])) {
         $issigned = true;
@@ -279,6 +277,22 @@ if (isset($_POST['regen']) && !$issigned) {
     $state['rawscores'][$qn] = array();
 }
 
+if (isset($payload['adapt']['stuanswers']) && $payload['adapt']['stuanswers'][0]) {
+    //var_dump($payload['adapt']['stuanswers'][0] );
+    //print_r($payload['adapt']);
+    $state['stuanswers'][$qn + 1] = $payload['adapt']['stuanswers'][0] ? $payload['adapt']['stuanswers'][0] : [];
+    $state['stuanswersval'][$qn + 1] = '';
+    //$state['stuanswers'][$qn + 1] = $payload['adapt']['stuanswers'];
+    //
+}
+
+//print_r($state);
+if (isset($payload['adapt']['showans'])) {
+    $state['showans'] = $payload['adapt']['showans'];
+}
+$state['scoreiscorrect'][$qn + 1] = true;
+//$state['showans']=  true;
+//s you noticed, in a multipart question, instead of qn$qn, the id will be qn(1000*($qn+1)+$partnum)
 $a2->setState($state);
 
 if (isset($_POST['toscoreqn'])) {
@@ -291,6 +305,20 @@ if (isset($_POST['toscoreqn'])) {
     }
     $res = $a2->scoreQuestion($qn, $parts_to_score);
 
+    if ($res['errors']) {
+        $error = str_replace("'", '`', $res['errors'][0] . json_encode($parts_to_score));
+        if (strpos($error, 'ksort() expects parameter 1 to be array, null given') !== false) {
+            $error = "You did not change your submission.";
+        }
+        echo json_encode(utf8_encode('{"type":"error", "message":"Error: ' . $error . '"}'));
+        exit;
+    }
+    if (!$state['stuanswers'][$qn + 1]) {
+        if (!$res['allans']) {
+            echo json_encode(utf8_encode('{"type":"error", "message":"Please have an entry for all answers before submitting."}'));
+            exit;
+        }
+    }
     $jwtcontents = array(
         'id' => $qsid,
         'score' => round(array_sum($res['scores']), 2),
@@ -302,11 +330,10 @@ if (isset($_POST['toscoreqn'])) {
 
     //decode to get the URL
     $problemJWT = $_REQUEST['problemJWT'];
-    $problemJWT = $JWE->decrypt($_REQUEST['problemJWT'], $secret_file);
+    $problemJWT = $JWE->decrypt($_REQUEST['problemJWT']);
     $old_payload = json_decode($problemJWT, true);
 
     $url = $old_payload['scheme_and_host'];
-
 
     $payload = [
         'id' => $qsid,
@@ -322,20 +349,20 @@ if (isset($_POST['toscoreqn'])) {
     }
 
     $payload['problemJWT'] = $_REQUEST['problemJWT'];
-    $answerJWT = JWT::encode($payload,  file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/../JWE/$secret_file"));
+    $answerJWT = JWT::encode($payload, file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/../JWE/webwork'));
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $answerJWT);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     //cURL will only work on live or dev --- not local for some reason...
 
-    curl_setopt($ch, CURLOPT_URL, "$url/$api/imathas/process-answer-jwt");
+    curl_setopt($ch, CURLOPT_URL, "$url/api/jwt/process-answer-jwt");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
     $result = curl_exec($ch); // Execute the cURL statement
 
     if ($result === false) {
-        echo json_encode(utf8_encode('{"type":"error", "message":"There was an error trying to connect to Adapt: ' . curl_error($ch) .'"}'));
+        echo json_encode(utf8_encode('{"type":"error", "message":"There was an error trying to connect to Adapt: ' . curl_error($ch) . '"}'));
         exit;
     }
     curl_close($ch); // Close the cURL connection
@@ -410,7 +437,44 @@ $placeinhead .= '<link rel="stylesheet" type="text/css" href="' . $imasroot . '/
 
 /** ADAPT */
 $placeinhead .= '<script src="' . $imasroot . '/dev/assess2sup.js?v=' . rand(1, 100000) . '" type="text/javascript"></script>';
-
+$placeinhead .= '<style>
+.button-primary:not(:hover) {
+    background-color: #0058E6 !important;
+}
+.button-primary {
+    padding: .25rem .5rem;
+    border-radius: .2rem;
+}
+.button-primary {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+.button-primary {
+        display: inline-block;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        text-decoration: none;
+        vertical-align: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        border: 1px solid transparent;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+.questionpane {
+    margin: 0;
+    font-family: var(--bs-font-sans-serif);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    background-color: #fff;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+</style>';
 
 // setup resize message sender
 $placeinhead .= '<script type="text/javascript">
@@ -499,14 +563,31 @@ if (!$state['jssubmit']) {
 echo '</div>';
 echo '<input type=hidden name=toscoreqn id=toscoreqn value=""/>';
 echo '<input type=hidden name=state id=state value="' . Sanitize::encodeStringForDisplay(JWT::encode($a2->getState(), $statesecret)) . '" />';
-echo '<input type=hidden name=problemJWT id=problemJWT value="' . $_REQUEST['problemJWT']. '" />';
-echo '<input type=hidden name=url  value="' . $url. '" />';
+echo '<input type=hidden name=problemJWT id=problemJWT value="' . $_REQUEST['problemJWT'] . '" />';
+echo '<input type=hidden name=url  value="' . $url . '" />';
 
 
 echo '<script>
     $(function() {
         showandinit(' . $qn . ',' . json_encode($disp) . ');
+        updateCSS(' . json_encode($raw) . ');
     });
+ window.addEventListener("message", event => {
+     if (typeof event.data !== "string") {
+      let message;
+      try {
+        message = JSON.parse(event.data);
+        if (message.raw){
+            updateCSS(message.raw)
+        }
+        console.log(message)
+      } 
+      catch (e) {
+        
+      }
+        return;
+      }
+      })
     </script>';
 
 if ($state['jssubmit']) {
