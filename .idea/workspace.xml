@@ -22,11 +22,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="68cab050-92da-403e-af37-d289ca5a9166" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/assess2sup.js" beforeDir="false" afterPath="$PROJECT_DIR$/dev/assess2sup.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dev/embedq2.php" beforeDir="false" afterPath="$PROJECT_DIR$/dev/embedq2.php" afterDir="false" />
-    </list>
+    <list default="true" id="5b04c99b-141a-4867-a457-18427dfb278c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

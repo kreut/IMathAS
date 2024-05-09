@@ -82,7 +82,7 @@ if (isset($_POST['state'])) {
             exit;
         }
         $payload = json_decode($problemJWT, true);
-        $QS = $payload;
+        //$QS = $payload['imathas'];
         $QS['id'] = $payload['imathas']['id'];
         $QS['seed'] = $payload['imathas']['seed'];
         $QS['allowregen'] = $payload['imathas']['allowregen'];
@@ -291,7 +291,7 @@ if (isset($payload['adapt']['showans'])) {
     $state['showans'] = $payload['adapt']['showans'];
 }
 $state['scoreiscorrect'][$qn + 1] = true;
-//$state['showans']=  true;
+$state['submitall']= 1;
 //s you noticed, in a multipart question, instead of qn$qn, the id will be qn(1000*($qn+1)+$partnum)
 $a2->setState($state);
 
