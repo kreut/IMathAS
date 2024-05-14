@@ -1,5 +1,4 @@
 <?php
-
 // embedq2.php: Embed one question via an iframe
 // Operates without requiring login
 // Can passback results to embedding page
@@ -86,11 +85,11 @@ if (isset($_POST['state'])) {
         $QS['id'] = $payload['imathas']['id'];
         $QS['seed'] = $payload['imathas']['seed'];
         $QS['allowregen'] = $payload['imathas']['allowregen'];
-
+        $QS['includeans'] = $payload['imathas']['includeans'];
         if (isset($payload['adapt']['raw'])) {
             $raw = $payload['adapt']['raw'];
         }
-        //print_r($payload['adapt']);
+
     } catch (Exception $e) {
         echo "There was an error trying to connect to iMathAS: " . $e->getMessage();
         exit;
@@ -248,6 +247,10 @@ if (isset($QS['showscored'])) {
     } else {
         $state['showans'] = 0;
     }
+}
+
+if (isset($QS['includeans']) && $QS['includeans']) {
+    $state['includeans'] = 1;
 }
 if (isset($QS['allowregen'])) {
     $state['allowregen'] = $QS['allowregen'];
