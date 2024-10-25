@@ -195,9 +195,9 @@ if (isset($_POST['state'])) {
         'scoreiscorrect' => array(($qn + 1) => false),
         'partattemptn' => array($qn => array()),
         'rawscores' => array($qn => array()),
-        'auth' => $QS['auth']
+        'auth' => $QS['auth'],
+        'qtype' => $line['qtype']
     );
-
 }
 
 $overrides = array();
@@ -294,10 +294,13 @@ if (isset($payload['adapt']['showans'])) {
     $state['showans'] = $payload['adapt']['showans'];
 }
 $state['scoreiscorrect'][$qn + 1] = true;
-$state['submitall']= 1;
-//s you noticed, in a multipart question, instead of qn$qn, the id will be qn(1000*($qn+1)+$partnum)
-$a2->setState($state);
+$state['submitall'] = 1;
 
+
+$a2->setState($state);
+$is_conditional_question = $state['qtype'] === 'conditional';
+
+//var_dump($a2->getState());
 if (isset($_POST['toscoreqn'])) {
     $toscoreqn = json_decode($_POST['toscoreqn'], true);
     $parts_to_score = array();
@@ -573,7 +576,7 @@ echo '<input type=hidden name=url  value="' . $url . '" />';
 echo '<script>
     $(function() {
         showandinit(' . $qn . ',' . json_encode($disp) . ');
-        updateCSS(' . json_encode($raw) . ');
+      updateCSS(' . json_encode($raw) . ', ' . ($is_conditional_question ? 'true' : 'false') . ');
     });
  window.addEventListener("message", event => {
      if (typeof event.data !== "string") {
@@ -581,12 +584,12 @@ echo '<script>
       try {
         message = JSON.parse(event.data);
         if (message.raw){
-            updateCSS(message.raw)
+          updateCSS(message.raw, ' . ($is_conditional_question ? 'true' : 'false') . ');
         }
         console.log(message)
-      } 
+      }
       catch (e) {
-        
+
       }
         return;
       }

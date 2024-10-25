@@ -54,32 +54,52 @@ function adaptSubmitq(qn) {
     });
 }
 
-function updateCSS(raw) {
+function updateCSS(raw,isConditionalQuestion) {
     let errorCSS = {
-        "border-color": "rgba(191, 84, 84, 0.6)",
+        "border-color": "#BF5454",
         "box-shadow": "rgba(0, 0, 0, 0.075) 0px 1px 1px inset, rgba(191, 84, 84, 0.6) 0px 0px 8px",
         "color": "inherit",
         "outline": "0px"
     }
+
+    let errorDivCSS = {
+        "border": "solid #BF5454 2px",
+        "padding" : "10px"
+    }
+
+    let correctDivCSS = {
+        "border": "solid #519951 2px",
+        "padding" : "10px"
+    }
+
     let correctCSS = {
-        "border-color": "rgba(81, 153, 81, 0.8)",
+        "border-color": "#519951",
         "box-shadow": "rgba(0, 0, 0, 0.075) 0px 1px 1px inset, rgba(81, 153, 81, 0.8) 0px 0px 8px",
         "color": "inherit",
         "outline": "0px"
     }
     $('button.primary').html('Submit Answers').removeClass('primary').addClass('button-primary')
-    console.log('highlighting answers')
-    console.log(raw)
-
+    let foundEnclosingElement = false; // Flag to check if any enclosing element is found
     $('input, select, textarea').each(function (index) {
-        console.log(raw)
-        if (raw.hasOwnProperty(index)) {
-            console.log(raw[index])
-            let css = raw[index] === 1 ? correctCSS : errorCSS
-            $(this).css(css)
-            let nextSpan = $(this).next('span')
-            if (nextSpan.length > 0 && nextSpan.attr('id') && nextSpan.attr('id').startsWith('mqinput-')) {
-                $(this).next('span').css(css)
+        if (isConditionalQuestion && raw.hasOwnProperty(0)){
+            const enclosingElement = $(this).closest('div');
+            if (enclosingElement.length && !foundEnclosingElement) {
+                let css = raw[0] === 1 ? correctDivCSS : errorDivCSS
+                enclosingElement.css(css)
+                foundEnclosingElement = true;
+            }
+            if (!foundEnclosingElement) {
+                let css = raw[0] === 1 ? correctDivCSS : errorDivCSS
+                $('.questionwrap').css(css);
+            }
+        } else {
+            if (raw.hasOwnProperty(index)) {
+                let css = raw[index] === 1 ? correctCSS : errorCSS
+                $(this).css(css)
+                let nextSpan = $(this).next('span')
+                if (nextSpan.length > 0 && nextSpan.attr('id') && nextSpan.attr('id').startsWith('mqinput-')) {
+                    $(this).next('span').css(css)
+                }
             }
         }
     })
