@@ -60,7 +60,7 @@ $_SESSION = [];
 $JWE = new JWE();
 $inline_choicemap = !empty($CFG['GEN']['choicesalt']) ? $CFG['GEN']['choicesalt'] : 'test';
 $statesecret = !empty($CFG['GEN']['embedsecret']) ? $CFG['GEN']['embedsecret'] : 'test';
-
+$_SESSION['secsalt'] = "12345";
 $issigned = false;
 $raw = [];
 // Get basic settings from JWT or query string
